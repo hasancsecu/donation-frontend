@@ -33,7 +33,7 @@ export default function ReportPage() {
     message: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
 
   const router = useRouter();
 

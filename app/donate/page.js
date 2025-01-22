@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
@@ -19,6 +19,18 @@ export default function DonatePage() {
   });
 
   const router = useRouter();
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      setFormData({
+        ...formData,
+        name: parsedUser.name || "",
+        email: parsedUser.email || "",
+      });
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
