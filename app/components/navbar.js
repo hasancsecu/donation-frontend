@@ -3,11 +3,13 @@
 import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -24,6 +26,14 @@ export default function Navbar() {
       setIsLoggedIn(false);
     }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+    router.push("/auth/sign-in");
+  };
 
   return (
     <nav className="bg-blue-500 text-white fixed top-0 w-full z-50 shadow-md">
@@ -58,11 +68,16 @@ export default function Navbar() {
               </>
             ) : isAdmin ? (
               <>
-                <Link href="/donation-report">
+                <Link href="/admin/report">
                   <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
                     Donation Report
                   </span>
                 </Link>
+                <span className="cursor-pointer" onClick={handleLogout}>
+                  <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
+                    Logout
+                  </span>
+                </span>
               </>
             ) : (
               <>
@@ -76,6 +91,11 @@ export default function Navbar() {
                     My Donations
                   </span>
                 </Link>
+                <span className="cursor-pointer" onClick={handleLogout}>
+                  <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
+                    Logout
+                  </span>
+                </span>
               </>
             )}
           </div>
@@ -139,14 +159,16 @@ export default function Navbar() {
               </>
             ) : isAdmin ? (
               <>
-                <Link
-                  href="/donation-report"
-                  onClick={() => setIsOpen(!isOpen)}
-                >
+                <Link href="/admin/report" onClick={() => setIsOpen(!isOpen)}>
                   <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
                     Donation Report
                   </span>
                 </Link>
+                <span className="cursor-pointer" onClick={handleLogout}>
+                  <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
+                    Logout
+                  </span>
+                </span>
               </>
             ) : (
               <>
@@ -160,6 +182,11 @@ export default function Navbar() {
                     My Donations
                   </span>
                 </Link>
+                <span className="cursor-pointer" onClick={handleLogout}>
+                  <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
+                    Logout
+                  </span>
+                </span>
               </>
             )}
           </div>

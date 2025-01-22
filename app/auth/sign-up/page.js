@@ -6,6 +6,7 @@ import Link from "next/link";
 import { toast } from "react-hot-toast";
 
 export default function SignUp() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -17,6 +18,14 @@ export default function SignUp() {
     e.preventDefault();
 
     setErrors({});
+
+    if (!name) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        name: "Please provide a your full name.",
+      }));
+      return;
+    }
 
     if (!email || !validateEmail(email)) {
       setErrors((prevErrors) => ({
@@ -51,7 +60,7 @@ export default function SignUp() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password, confirmPassword }),
       });
 
       if (response.ok) {
@@ -65,7 +74,7 @@ export default function SignUp() {
 
         setTimeout(() => {
           router.push("/donate");
-        }, 2000);
+        }, 1000);
       } else {
         const error = await response.json();
         toast.dismiss(loadingToastId);
@@ -120,6 +129,19 @@ export default function SignUp() {
           Sign Up
         </h2>
         <form onSubmit={handleSubmit} className="mt-4">
+          <div className="mb-4">
+            <label className="block text-sm text-gray-600">Full Name</label>
+            <input
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.name ? "border-red-500" : ""
+              }`}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            {errors.name && (
+              <p className="text-xs text-red-500 mt-1">{errors.name}</p>
+            )}
+          </div>
           <div className="mb-4">
             <label className="block text-sm text-gray-600">Email</label>
             <input

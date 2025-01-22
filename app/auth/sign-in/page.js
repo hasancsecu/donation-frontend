@@ -52,7 +52,7 @@ export default function SignIn() {
 
         setTimeout(() => {
           router.push("/donate");
-        }, 2000);
+        }, 1000);
       } else {
         const error = await response.json();
         toast.dismiss(loadingToastId);

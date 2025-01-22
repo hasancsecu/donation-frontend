@@ -80,7 +80,7 @@ export default function DonatePage() {
 
         setTimeout(() => {
           router.push("/");
-        }, 2000);
+        }, 1000);
       } else {
         toast.error("Failed to process the donation. Please try again later.");
       }
