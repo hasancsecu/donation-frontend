@@ -218,12 +218,14 @@ export default function ReportPage() {
             <h2 className="text-2xl font-semibold text-gray-700">
               Donation Report
             </h2>
-            <button
-              onClick={exportToCSV}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Download CSV
-            </button>
+            {donations && donations.length > 0 && (
+              <button
+                onClick={exportToCSV}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Download CSV
+              </button>
+            )}
           </div>
 
           <div className="mb-4">

@@ -66,9 +66,9 @@ export default function DonatePage() {
       toast.error("Invalid email format.");
     }
 
-    if (!amount.trim() || isNaN(amount) || Number(amount) <= 0) {
+    if (!amount.trim() || isNaN(amount) || Number(amount) < 1) {
       newErrors.amount = true;
-      toast.error("Donation amount must be a positive number.");
+      toast.error("Minimum donation amount is BDT 1");
     }
 
     setErrors(newErrors);
