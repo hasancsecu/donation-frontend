@@ -102,14 +102,14 @@ export default function ReportPage() {
               <table className="w-full table-auto border-collapse border border-gray-300">
                 <thead className="bg-gray-200">
                   <tr>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
+                    <th className="border border-gray-300 px-4 py-2 text-center">
                       #
                     </th>
                     <th
-                      className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
+                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
                       onClick={() => handleSort("name")}
                     >
-                      <span className="flex gap-2 items-center">
+                      <span className="flex justify-center gap-2 items-center">
                         <span>Name</span>
                         <span>
                           {sortConfig.key === "name" &&
@@ -125,10 +125,10 @@ export default function ReportPage() {
                       </span>
                     </th>
                     <th
-                      className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
+                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
                       onClick={() => handleSort("email")}
                     >
-                      <span className="flex gap-2 items-center">
+                      <span className="flex justify-center gap-2 items-center">
                         <span>Email</span>
                         <span>
                           {sortConfig.key === "email" &&
@@ -144,10 +144,10 @@ export default function ReportPage() {
                       </span>
                     </th>
                     <th
-                      className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
+                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
                       onClick={() => handleSort("amount")}
                     >
-                      <span className="flex gap-2 items-center">
+                      <span className="flex justify-center gap-2 items-center">
                         <span>Amount</span>
                         <span>
                           {sortConfig.key === "amount" &&
@@ -162,14 +162,14 @@ export default function ReportPage() {
                         </span>
                       </span>
                     </th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
+                    <th className="border border-gray-300 px-4 py-2 text-center">
                       Message
                     </th>
                     <th
-                      className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
+                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
                       onClick={() => handleSort("createdAt")}
                     >
-                      <span className="flex gap-2 items-center">
+                      <span className="flex justify-center gap-2 items-center">
                         <span> Paid On</span>
                         <span>
                           {sortConfig.key === "createdAt" &&
@@ -232,7 +232,7 @@ export default function ReportPage() {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
                 >
                   <FaArrowLeft />
                 </button>
@@ -242,7 +242,7 @@ export default function ReportPage() {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
                 >
                   <FaArrowRight />
                 </button>

@@ -26,7 +26,7 @@ export default function Welcome() {
           <>
             <div className="flex justify-center items-center gap-5">
               <Link href="/auth/sign-in">
-                <button className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+                <button className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
                   Sign In and Donate
                 </button>
               </Link>
@@ -45,7 +45,7 @@ export default function Welcome() {
           <>
             <div className="flex justify-center items-center">
               <Link href="/donate">
-                <button className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+                <button className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
                   Make a Donation
                 </button>
               </Link>

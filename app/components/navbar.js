@@ -32,11 +32,12 @@ export default function Navbar() {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
     setIsAdmin(false);
+    setIsOpen(false);
     router.push("/auth/sign-in");
   };
 
   return (
-    <nav className="bg-blue-500 text-white w-full z-50 shadow-md">
+    <nav className="bg-green-500 text-white w-full z-50 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -49,19 +50,19 @@ export default function Navbar() {
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-4">
             <Link href="/">
-              <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
+              <span className="hover:bg-green-600 px-3 py-2 rounded-md">
                 Home
               </span>
             </Link>
             {!isLoggedIn ? (
               <>
                 <Link href="/auth/sign-in">
-                  <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
+                  <span className="hover:bg-green-600 px-3 py-2 rounded-md">
                     Sign In
                   </span>
                 </Link>
                 <Link href="/auth/sign-up">
-                  <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
+                  <span className="hover:bg-green-600 px-3 py-2 rounded-md">
                     Sign Up
                   </span>
                 </Link>
@@ -69,24 +70,24 @@ export default function Navbar() {
             ) : (
               <>
                 <Link href="/donate">
-                  <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
+                  <span className="hover:bg-green-600 px-3 py-2 rounded-md">
                     Donate
                   </span>
                 </Link>
                 <Link href="/user/report">
-                  <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
+                  <span className="hover:bg-green-600 px-3 py-2 rounded-md">
                     My Donations
                   </span>
                 </Link>
                 {isAdmin && (
                   <Link href="/admin/report">
-                    <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
+                    <span className="hover:bg-green-600 px-3 py-2 rounded-md">
                       Donation Report
                     </span>
                   </Link>
                 )}
                 <span className="cursor-pointer" onClick={handleLogout}>
-                  <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
+                  <span className="hover:bg-green-600 px-3 py-2 rounded-md">
                     Logout
                   </span>
                 </span>
@@ -131,22 +132,22 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-blue-600">
+        <div className="md:hidden bg-green-600">
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link href="/" onClick={() => setIsOpen(!isOpen)}>
-              <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
+              <span className="block hover:bg-green-700 px-3 py-2 rounded-md">
                 Home
               </span>
             </Link>
             {!isLoggedIn ? (
               <>
                 <Link href="/auth/sign-in" onClick={() => setIsOpen(!isOpen)}>
-                  <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
+                  <span className="block hover:bg-green-700 px-3 py-2 rounded-md">
                     Sign In
                   </span>
                 </Link>
                 <Link href="/auth/sign-up" onClick={() => setIsOpen(!isOpen)}>
-                  <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
+                  <span className="block hover:bg-green-700 px-3 py-2 rounded-md">
                     Sign Up
                   </span>
                 </Link>
@@ -154,24 +155,24 @@ export default function Navbar() {
             ) : (
               <>
                 <Link href="/donate" onClick={() => setIsOpen(!isOpen)}>
-                  <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
+                  <span className="block hover:bg-green-700 px-3 py-2 rounded-md">
                     Donate
                   </span>
                 </Link>
                 <Link href="/user/report" onClick={() => setIsOpen(!isOpen)}>
-                  <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
+                  <span className="block hover:bg-green-700 px-3 py-2 rounded-md">
                     My Donations
                   </span>
                 </Link>
                 {isAdmin && (
                   <Link href="/admin/report" onClick={() => setIsOpen(!isOpen)}>
-                    <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
+                    <span className="block hover:bg-green-700 px-3 py-2 rounded-md">
                       Donation Report
                     </span>
                   </Link>
                 )}
                 <span className="cursor-pointer" onClick={handleLogout}>
-                  <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
+                  <span className="block hover:bg-green-700 px-3 py-2 rounded-md">
                     Logout
                   </span>
                 </span>

@@ -113,7 +113,7 @@ export default function SignIn() {
           <div className="mb-4">
             <label className="block text-sm text-gray-600">Email</label>
             <input
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500  ${
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500  ${
                 errors.email ? "border-red-500" : ""
               }`}
               value={email}
@@ -127,7 +127,7 @@ export default function SignIn() {
             <label className="block text-sm text-gray-600">Password</label>
             <input
               type="password"
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500  ${
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500  ${
                 errors.password ? "border-red-500" : ""
               }`}
               value={password}
@@ -142,7 +142,7 @@ export default function SignIn() {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+            className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600"
             disabled={loading}
           >
             {loading ? "Signing In..." : "Sign In"}
@@ -150,7 +150,7 @@ export default function SignIn() {
         </form>
         <p className="mt-4 text-sm text-gray-600 text-center">
           Don't have an account?{" "}
-          <Link href="/auth/sign-up" className="text-blue-500 hover:underline">
+          <Link href="/auth/sign-up" className="text-green-500 hover:underline">
             Sign Up
           </Link>
         </p>

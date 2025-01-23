@@ -247,7 +247,7 @@ export default function ReportPage() {
             {donations && donations.length > 0 && (
               <button
                 onClick={exportToCSV}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
               >
                 Download CSV
               </button>
@@ -260,7 +260,7 @@ export default function ReportPage() {
               placeholder="Search donations..."
               value={searchQuery}
               onChange={handleSearch}
-              className="w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
@@ -276,14 +276,14 @@ export default function ReportPage() {
               <table className="w-full table-auto border-collapse border border-gray-300">
                 <thead className="bg-gray-200">
                   <tr>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
+                    <th className="border border-gray-300 px-4 py-2 text-center">
                       #
                     </th>
                     <th
-                      className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
+                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
                       onClick={() => handleSort("name")}
                     >
-                      <span className="flex gap-2 items-center">
+                      <span className="flex justify-center gap-2 items-center">
                         <span>Name</span>
                         <span>
                           {sortConfig.key === "name" &&
@@ -299,10 +299,10 @@ export default function ReportPage() {
                       </span>
                     </th>
                     <th
-                      className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
+                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
                       onClick={() => handleSort("email")}
                     >
-                      <span className="flex gap-2 items-center">
+                      <span className="flex justify-center gap-2 items-center">
                         <span>Email</span>
                         <span>
                           {sortConfig.key === "email" &&
@@ -318,10 +318,10 @@ export default function ReportPage() {
                       </span>
                     </th>
                     <th
-                      className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
+                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
                       onClick={() => handleSort("amount")}
                     >
-                      <span className="flex gap-2 items-center">
+                      <span className="flex justify-center gap-2 items-center">
                         <span>Amount</span>
                         <span>
                           {sortConfig.key === "amount" &&
@@ -336,17 +336,17 @@ export default function ReportPage() {
                         </span>
                       </span>
                     </th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
+                    <th className="border border-gray-300 px-4 py-2 text-center">
                       Message
                     </th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
+                    <th className="border border-gray-300 px-4 py-2 text-center">
                       Admin Remarks
                     </th>
                     <th
-                      className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
+                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
                       onClick={() => handleSort("createdAt")}
                     >
-                      <span className="flex gap-2 items-center">
+                      <span className="flex justify-center gap-2 items-center">
                         <span> Paid On</span>
                         <span>
                           {sortConfig.key === "createdAt" &&
@@ -362,10 +362,10 @@ export default function ReportPage() {
                       </span>
                     </th>
                     <th
-                      className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
+                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
                       onClick={() => handleSort("updatedAt")}
                     >
-                      <span className="flex gap-2 items-center">
+                      <span className="flex justify-center gap-2 items-center">
                         <span> Updated On</span>
                         <span>
                           {sortConfig.key === "updatedAt" &&
@@ -380,7 +380,7 @@ export default function ReportPage() {
                         </span>
                       </span>
                     </th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
+                    <th className="border border-gray-300 px-4 py-2 text-center">
                       Actions
                     </th>
                   </tr>
@@ -412,22 +412,22 @@ export default function ReportPage() {
                       <td className="border border-gray-300 px-4 py-2">
                         {new Date(donation.updatedAt).toLocaleString()}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-4 py-2 flex items-center justify-center gap-2">
                         <button
                           onClick={() => handleEdit(donation)}
-                          className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                          className="bg-green-500 text-white p-1 rounded hover:bg-green-600"
                         >
                           <FaEdit />
                         </button>
                         <button
                           onClick={() => handleView(donation)}
-                          className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 ml-2"
+                          className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600"
                         >
                           <FaEye />
                         </button>
                         <button
                           onClick={() => handleDelete(donation.id)}
-                          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 ml-2"
+                          className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
                         >
                           <FaTrash />
                         </button>
@@ -457,7 +457,7 @@ export default function ReportPage() {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
                 >
                   <FaArrowLeft />
                 </button>
@@ -467,7 +467,7 @@ export default function ReportPage() {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
                 >
                   <FaArrowRight />
                 </button>
@@ -510,12 +510,12 @@ export default function ReportPage() {
                 name="adminRemarks"
                 value={formData.adminRemarks}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               ></textarea>
             </div>
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
             >
               Save Changes
             </button>

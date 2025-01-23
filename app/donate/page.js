@@ -43,11 +43,17 @@ export default function DonatePage() {
       ...formData,
       [name]: value,
     });
-
-    setErrors({
-      ...errors,
-      [name]: false,
-    });
+    if (value) {
+      setErrors({
+        ...errors,
+        [name]: false,
+      });
+    } else {
+      setErrors({
+        ...errors,
+        [name]: true,
+      });
+    }
   };
 
   const validateEmail = (email) => {
@@ -63,17 +69,14 @@ export default function DonatePage() {
 
     if (!name.trim()) {
       newErrors.name = true;
-      toast.error("Full name is required.");
     }
 
     if (email && !validateEmail(email)) {
       newErrors.email = true;
-      toast.error("Invalid email format.");
     }
 
     if (!amount.trim() || isNaN(amount) || Number(amount) < 1) {
       newErrors.amount = true;
-      toast.error("Minimum donation amount is BDT 1");
     }
 
     setErrors(newErrors);
@@ -125,11 +128,16 @@ export default function DonatePage() {
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
                 errors.name
                   ? "border-red-500 focus:ring-red-500"
-                  : "focus:ring-blue-500"
+                  : "focus:ring-green-500"
               }`}
               value={formData.name}
               onChange={handleChange}
             />
+            {errors.name && (
+              <p className="text-xs text-red-500 mt-1">
+                Please provide your full name
+              </p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-sm text-gray-600">
@@ -141,12 +149,17 @@ export default function DonatePage() {
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
                 errors.email
                   ? "border-red-500 focus:ring-red-500"
-                  : "focus:ring-blue-500"
+                  : "focus:ring-green-500"
               } ${isLoggedIn ? "cursor-not-allowed" : ""}`}
               value={formData.email}
               onChange={handleChange}
               disabled={isLoggedIn}
             />
+            {errors.email && (
+              <p className="text-xs text-red-500 mt-1">
+                Please provide a valid email
+              </p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-sm text-gray-600">
@@ -158,11 +171,16 @@ export default function DonatePage() {
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
                 errors.amount
                   ? "border-red-500 focus:ring-red-500"
-                  : "focus:ring-blue-500"
+                  : "focus:ring-green-500"
               }`}
               value={formData.amount}
               onChange={handleChange}
             />
+            {errors.amount && (
+              <p className="text-xs text-red-500 mt-1">
+                Minimum donation amount is BDT 1
+              </p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-sm text-gray-600">
@@ -170,7 +188,7 @@ export default function DonatePage() {
             </label>
             <textarea
               name="message"
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               value={formData.message}
               onChange={handleChange}
               rows="4"
@@ -178,7 +196,7 @@ export default function DonatePage() {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+            className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600"
           >
             Donate Now
           </button>
