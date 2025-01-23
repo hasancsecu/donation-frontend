@@ -70,7 +70,6 @@ export default function ReportPage() {
       setLoading(true);
       setError("");
 
-      // Construct query parameters dynamically
       let queryParams = `page=${page}&limit=${limit}`;
 
       if (searchQuery) queryParams += `&search=${searchQuery}`;
@@ -78,8 +77,18 @@ export default function ReportPage() {
       if (sortConfig.direction)
         queryParams += `&sortDirection=${sortConfig.direction}`;
 
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Authentication token not found");
+
       const response = await fetch(
-        `http://localhost:5000/donations?${queryParams}`
+        `http://localhost:5000/donations?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       if (!response.ok) throw new Error("Failed to fetch donations");
