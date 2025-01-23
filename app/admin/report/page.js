@@ -31,6 +31,7 @@ export default function ReportPage() {
     email: "",
     amount: "",
     message: "",
+    adminRemarks: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
@@ -63,7 +64,15 @@ export default function ReportPage() {
         fetchDonations(currentPage, pageSize, searchQuery, sortConfig);
       }
     }
-  }, [isAdmin, isLoading, currentPage, pageSize, searchQuery, sortConfig]);
+  }, [
+    isAdmin,
+    isLoading,
+    currentPage,
+    pageSize,
+    searchQuery,
+    sortConfig,
+    router,
+  ]);
 
   const fetchDonations = async (page, limit, searchQuery, sortConfig) => {
     try {
@@ -105,13 +114,23 @@ export default function ReportPage() {
 
   const exportToCSV = () => {
     const csvContent = [
-      ["#", "Name", "Email", "Amount", "Message", "Paid On", "Updated On"],
+      [
+        "#",
+        "Name",
+        "Email",
+        "Amount",
+        "Message",
+        "Admin Remarks",
+        "Paid On",
+        "Updated On",
+      ],
       ...donations.map((d, i) => [
         i + 1,
         d.name,
-        d.email,
+        d.email || "-",
         `BDT ${d.amount}`,
         d.message || "—",
+        d.adminRemarks || "—",
         new Date(d.createdAt).toISOString(),
         new Date(d.updatedAt).toISOString(),
       ]),
@@ -149,6 +168,7 @@ export default function ReportPage() {
       email: donation.email,
       amount: donation.amount,
       message: donation.message || "",
+      adminRemarks: donation.adminRemarks || "",
     });
     if (editDialogRef.current) {
       editDialogRef.current.showModal();
@@ -202,10 +222,7 @@ export default function ReportPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            amount: formData.amount,
-            message: formData.message,
+            adminRemarks: formData.adminRemarks,
           }),
         }
       );
@@ -322,6 +339,9 @@ export default function ReportPage() {
                     <th className="border border-gray-300 px-4 py-2 text-left">
                       Message
                     </th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">
+                      Admin Remarks
+                    </th>
                     <th
                       className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
                       onClick={() => handleSort("createdAt")}
@@ -377,11 +397,14 @@ export default function ReportPage() {
                       <td className="border border-gray-300 px-4 py-2">
                         {donation.email}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-4 py-2 text-right">
                         {donation.amount}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         {donation.message}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {donation.adminRemarks}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         {new Date(donation.createdAt).toLocaleString()}
@@ -416,6 +439,21 @@ export default function ReportPage() {
 
               {/* Pagination */}
               <div className="flex justify-center items-center gap-3 mt-4">
+                <div>
+                  <select
+                    value={pageSize}
+                    onChange={(e) => {
+                      setPageSize(Number(e.target.value));
+                    }}
+                    className="border rounded px-2 py-1"
+                  >
+                    {[10, 20, 50, 100].map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
@@ -451,53 +489,26 @@ export default function ReportPage() {
           </button>
           <h2 className="text-xl font-semibold mb-4">Edit Donation</h2>
           <form onSubmit={handleSave}>
+            <p className="mb-3">
+              <strong>Name:</strong> {selectedDonation?.name}
+            </p>
+            <p className="mb-3">
+              <strong>Email:</strong> {selectedDonation?.email}
+            </p>
+            <p className="mb-3">
+              <strong>Amount:</strong> BDT {selectedDonation?.amount}
+            </p>
+            <p className="mb-3">
+              <strong>Message:</strong> {selectedDonation?.message}
+            </p>
             <div className="mb-4">
-              <label htmlFor="name" className="block text-gray-700">
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-gray-700">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="amount" className="block text-gray-700">
-                Amount
-              </label>
-              <input
-                type="number"
-                id="amount"
-                name="amount"
-                value={formData.amount}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="message" className="block text-gray-700">
-                Message
+              <label htmlFor="adminRemarks" className="block">
+                <strong>Admin Remarks:</strong>
               </label>
               <textarea
-                id="message"
-                name="message"
-                value={formData.message}
+                id="adminRemarks"
+                name="adminRemarks"
+                value={formData.adminRemarks}
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               ></textarea>
@@ -523,23 +534,26 @@ export default function ReportPage() {
             <FaTimes />
           </button>
           <h2 className="text-xl font-semibold mb-4">View Donation</h2>
-          <p>
+          <p className="mb-3">
             <strong>Name:</strong> {selectedDonation?.name}
           </p>
-          <p>
+          <p className="mb-3">
             <strong>Email:</strong> {selectedDonation?.email}
           </p>
-          <p>
+          <p className="mb-3">
             <strong>Amount:</strong> BDT {selectedDonation?.amount}
           </p>
-          <p>
+          <p className="mb-3">
             <strong>Message:</strong> {selectedDonation?.message}
           </p>
-          <p>
+          <p className="mb-3">
+            <strong>Admin Remarks:</strong> {selectedDonation?.adminRemarks}
+          </p>
+          <p className="mb-3">
             <strong>Paid On:</strong>{" "}
             {new Date(selectedDonation?.createdAt).toLocaleString()}
           </p>
-          <p>
+          <p className="mb-3">
             <strong>Updated On:</strong>{" "}
             {new Date(selectedDonation?.updatedAt).toLocaleString()}
           </p>

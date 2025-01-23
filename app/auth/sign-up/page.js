@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
+import { jwtDecode } from "jwt-decode";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -13,6 +14,22 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        if (decodedToken?.role === "admin") {
+          router.push("/admin/report");
+        } else {
+          router.push("/donate");
+        }
+      } catch (error) {
+        console.error("Failed to decode token:", error);
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,8 +90,8 @@ export default function SignUp() {
         toast.success("Signed up successfully!");
 
         setTimeout(() => {
-          router.push("/donate");
-        }, 1000);
+          window.location.reload();
+        }, 500);
       } else {
         const error = await response.json();
         toast.dismiss(loadingToastId);

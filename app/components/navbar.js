@@ -36,13 +36,13 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-blue-500 text-white fixed top-0 w-full z-50 shadow-md">
+    <nav className="bg-blue-500 text-white w-full z-50 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/">
-              <span className="text-lg font-semibold">App</span>
+              <span className="text-lg font-semibold">Donation App</span>
             </Link>
           </div>
 
@@ -66,19 +66,6 @@ export default function Navbar() {
                   </span>
                 </Link>
               </>
-            ) : isAdmin ? (
-              <>
-                <Link href="/admin/report">
-                  <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
-                    Donation Report
-                  </span>
-                </Link>
-                <span className="cursor-pointer" onClick={handleLogout}>
-                  <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
-                    Logout
-                  </span>
-                </span>
-              </>
             ) : (
               <>
                 <Link href="/donate">
@@ -86,11 +73,18 @@ export default function Navbar() {
                     Donate
                   </span>
                 </Link>
-                <Link href="/my-donations">
+                <Link href="/user/report">
                   <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
                     My Donations
                   </span>
                 </Link>
+                {isAdmin && (
+                  <Link href="/admin/report">
+                    <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
+                      Donation Report
+                    </span>
+                  </Link>
+                )}
                 <span className="cursor-pointer" onClick={handleLogout}>
                   <span className="hover:bg-blue-600 px-3 py-2 rounded-md">
                     Logout
@@ -157,19 +151,6 @@ export default function Navbar() {
                   </span>
                 </Link>
               </>
-            ) : isAdmin ? (
-              <>
-                <Link href="/admin/report" onClick={() => setIsOpen(!isOpen)}>
-                  <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
-                    Donation Report
-                  </span>
-                </Link>
-                <span className="cursor-pointer" onClick={handleLogout}>
-                  <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
-                    Logout
-                  </span>
-                </span>
-              </>
             ) : (
               <>
                 <Link href="/donate" onClick={() => setIsOpen(!isOpen)}>
@@ -177,11 +158,18 @@ export default function Navbar() {
                     Donate
                   </span>
                 </Link>
-                <Link href="/my-donations" onClick={() => setIsOpen(!isOpen)}>
+                <Link href="/user/report" onClick={() => setIsOpen(!isOpen)}>
                   <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
                     My Donations
                   </span>
                 </Link>
+                {isAdmin && (
+                  <Link href="/admin/report" onClick={() => setIsOpen(!isOpen)}>
+                    <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
+                      Donation Report
+                    </span>
+                  </Link>
+                )}
                 <span className="cursor-pointer" onClick={handleLogout}>
                   <span className="block hover:bg-blue-700 px-3 py-2 rounded-md">
                     Logout

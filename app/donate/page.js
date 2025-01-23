@@ -11,24 +11,29 @@ export default function DonatePage() {
     amount: "",
     message: "",
   });
-
   const [errors, setErrors] = useState({
     name: false,
     email: false,
     amount: false,
   });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const router = useRouter();
 
   useEffect(() => {
     const user = localStorage.getItem("user");
-    if (user) {
+    const token = localStorage.getItem("token");
+
+    if (user && token) {
+      setIsLoggedIn(true);
       const parsedUser = JSON.parse(user);
       setFormData({
         ...formData,
         name: parsedUser.name || "",
         email: parsedUser.email || "",
       });
+    } else {
+      setIsLoggedIn(false);
     }
   }, []);
 
@@ -91,7 +96,11 @@ export default function DonatePage() {
         setFormData({ name: "", email: "", amount: "", message: "" });
 
         setTimeout(() => {
-          router.push("/");
+          if (isLoggedIn) {
+            router.push("/user/report");
+          } else {
+            router.push("/");
+          }
         }, 1000);
       } else {
         toast.error("Failed to process the donation. Please try again later.");
@@ -133,9 +142,10 @@ export default function DonatePage() {
                 errors.email
                   ? "border-red-500 focus:ring-red-500"
                   : "focus:ring-blue-500"
-              }`}
+              } ${isLoggedIn ? "cursor-not-allowed" : ""}`}
               value={formData.email}
               onChange={handleChange}
+              disabled={isLoggedIn}
             />
           </div>
           <div className="mb-4">

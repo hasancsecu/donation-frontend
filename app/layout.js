@@ -25,10 +25,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <main>
+        <main className="min-h-screen bg-gray-100">
           <Toaster position="top-center" reverseOrder={false} />
           <Navbar />
-          <div className="min-h-screen bg-gray-100 pt-20">{children}</div>
+          <div>{children}</div>
         </main>
       </body>
     </html>
