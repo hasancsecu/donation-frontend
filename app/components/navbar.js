@@ -4,13 +4,13 @@ import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -43,7 +43,13 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/">
-              <span className="text-lg font-semibold">Donation App</span>
+              <Image
+                className="rounded-full"
+                src="/donate.jpg"
+                width={55}
+                height={55}
+                alt="donate img"
+              />
             </Link>
           </div>
 

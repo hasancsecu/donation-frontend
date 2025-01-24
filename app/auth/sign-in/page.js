@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
-import { jwtDecode } from "jwt-decode";
+import { FaSignInAlt, FaSpinner } from "react-icons/fa";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -16,16 +16,7 @@ export default function SignIn() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        if (decodedToken?.role === "admin") {
-          router.push("/admin/report");
-        } else {
-          router.push("/donate");
-        }
-      } catch (error) {
-        console.error("Failed to decode token:", error);
-      }
+      router.push("/");
     }
   }, []);
 
@@ -104,7 +95,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-3">
       <div className="bg-white p-6 rounded-md shadow-md w-full max-w-md">
         <h2 className="text-2xl font-semibold text-gray-700 text-center">
           Sign In
@@ -142,10 +133,22 @@ export default function SignIn() {
           </div>
           <button
             type="submit"
-            className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600"
+            className={`w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 flex items-center justify-center gap-2 ${
+              loading ? "cursor-not-allowed opacity-75" : ""
+            }`}
             disabled={loading}
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? (
+              <>
+                <FaSpinner className="animate-spin text-white text-lg" />
+                <span>Signing In...</span>
+              </>
+            ) : (
+              <>
+                <FaSignInAlt className="text-white text-lg" />
+                <span>Sign In</span>
+              </>
+            )}
           </button>
         </form>
         <p className="mt-4 text-sm text-gray-600 text-center">

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { FaDonate } from "react-icons/fa";
 
 export default function DonatePage() {
   const [formData, setFormData] = useState({
@@ -49,10 +50,11 @@ export default function DonatePage() {
         [name]: false,
       });
     } else {
-      setErrors({
-        ...errors,
-        [name]: true,
-      });
+      if (name !== "email")
+        setErrors({
+          ...errors,
+          [name]: true,
+        });
     }
   };
 
@@ -114,7 +116,7 @@ export default function DonatePage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 md:px-6 px-3">
       <div className="bg-white p-6 rounded-md shadow-md w-full max-w-md">
         <h2 className="text-2xl font-semibold text-gray-700 text-center mb-4">
           Make a Donation
@@ -196,9 +198,10 @@ export default function DonatePage() {
           </div>
           <button
             type="submit"
-            className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600"
+            className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 flex items-center justify-center gap-2"
           >
-            Donate Now
+            <FaDonate className="text-white text-lg" />
+            <span>Donate Now</span>
           </button>
         </form>
       </div>

@@ -12,14 +12,17 @@ import {
   FaSort,
   FaSortUp,
   FaSortDown,
+  FaDownload,
+  FaSave,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
-import { jwtDecode } from "jwt-decode";
+import { AuthGuard } from "@/app/utils/AuthGuard";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-export default function ReportPage() {
-  const [isAdmin, setIsAdmin] = useState(false);
+function AdminReportPage() {
   const [donations, setDonations] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [totalDonation, setTotalDonation] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,46 +38,40 @@ export default function ReportPage() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
-
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
   const router = useRouter();
 
   const editDialogRef = useRef(null);
   const viewDialogRef = useRef(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        setIsAdmin(decodedToken?.role === "admin");
-      } catch (error) {
-        console.error("Failed to decode token:", error);
-      }
-    } else {
-      setIsAdmin(false);
-    }
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    if (!isLoading) {
-      if (!isAdmin) {
-        router.push("/");
-      } else {
-        fetchDonations(currentPage, pageSize, searchQuery, sortConfig);
-      }
-    }
+    fetchDonations(
+      currentPage,
+      pageSize,
+      searchQuery,
+      sortConfig,
+      fromDate,
+      toDate
+    );
   }, [
-    isAdmin,
-    isLoading,
     currentPage,
     pageSize,
     searchQuery,
     sortConfig,
     router,
+    fromDate,
+    toDate,
   ]);
 
-  const fetchDonations = async (page, limit, searchQuery, sortConfig) => {
+  const fetchDonations = async (
+    page,
+    limit,
+    searchQuery,
+    sortConfig,
+    fromDate,
+    toDate
+  ) => {
     try {
       setLoading(true);
       setError("");
@@ -82,6 +79,10 @@ export default function ReportPage() {
       let queryParams = `page=${page}&limit=${limit}`;
 
       if (searchQuery) queryParams += `&search=${searchQuery}`;
+      if (fromDate)
+        queryParams += `&from=${fromDate.toLocaleDateString("en-CA")}`;
+      if (toDate) queryParams += `&to=${toDate.toLocaleDateString("en-CA")}`;
+
       if (sortConfig.key) queryParams += `&sortKey=${sortConfig.key}`;
       if (sortConfig.direction)
         queryParams += `&sortDirection=${sortConfig.direction}`;
@@ -104,6 +105,7 @@ export default function ReportPage() {
 
       const data = await response.json();
       setDonations(data.data);
+      setTotalDonation(data.totalDonation);
       setTotalPages(data.totalPages);
     } catch (err) {
       setError(err.message);
@@ -148,6 +150,14 @@ export default function ReportPage() {
     document.body.removeChild(link);
   };
 
+  const handleFromDateChange = (date) => {
+    setFromDate(date);
+  };
+
+  const handleToDateChange = (date) => {
+    setToDate(date);
+  };
+
   const handleSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -186,10 +196,24 @@ export default function ReportPage() {
     const confirmed = window.confirm("Are you sure you want to delete this?");
     if (confirmed) {
       try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Authentication token not found");
+
         await fetch(`http://localhost:5000/donations/${id}`, {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
-        fetchDonations(currentPage, pageSize, searchQuery, sortConfig);
+        fetchDonations(
+          currentPage,
+          pageSize,
+          searchQuery,
+          sortConfig,
+          fromDate,
+          toDate
+        );
       } catch (err) {
         setError("Failed to delete donation");
       }
@@ -214,12 +238,16 @@ export default function ReportPage() {
     }
 
     try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Authentication token not found");
+
       const response = await fetch(
         `http://localhost:5000/donations/${selectedDonation.id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             adminRemarks: formData.adminRemarks,
@@ -229,7 +257,14 @@ export default function ReportPage() {
       if (!response.ok) throw new Error("Failed to update donation");
 
       toast.success("Donation updated successfully!");
-      fetchDonations(currentPage, pageSize, searchQuery, sortConfig);
+      fetchDonations(
+        currentPage,
+        pageSize,
+        searchQuery,
+        sortConfig,
+        fromDate,
+        toDate
+      );
       editDialogRef.current.close();
     } catch (err) {
       setError(err.message);
@@ -237,24 +272,25 @@ export default function ReportPage() {
   };
 
   return (
-    isAdmin && (
-      <div className="min-h-screen bg-gray-100 p-6">
-        <div className="bg-white p-6 rounded-md shadow-md mx-auto">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold text-gray-700">
-              Donation Report
-            </h2>
-            {donations && donations.length > 0 && (
-              <button
-                onClick={exportToCSV}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-              >
-                Download CSV
-              </button>
-            )}
-          </div>
+    <div className="min-h-screen bg-gray-100 py-6 md:px-6 px-3">
+      <div className="bg-white py-6 sm:px-6 px-3 rounded-md shadow-md mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-700">
+            Donation Report
+          </h2>
+          {donations && donations.length > 0 && (
+            <button
+              onClick={exportToCSV}
+              className="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 gap-2"
+            >
+              <FaDownload className="text-white text-lg" />
+              <span>Download CSV</span>
+            </button>
+          )}
+        </div>
 
-          <div className="mb-4">
+        <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
+          <div className="flex flex-wrap gap-3">
             <input
               type="text"
               placeholder="Search donations..."
@@ -262,278 +298,255 @@ export default function ReportPage() {
               onChange={handleSearch}
               className="w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-          </div>
-
-          {loading && <p className="text-center text-gray-500">Loading...</p>}
-          {error && <p className="text-center text-red-500">{error}</p>}
-
-          {!loading && donations && donations.length === 0 && (
-            <p className="text-center text-gray-500">No donations found.</p>
-          )}
-
-          {!loading && donations && donations.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="w-full table-auto border-collapse border border-gray-300">
-                <thead className="bg-gray-200">
-                  <tr>
-                    <th className="border border-gray-300 px-4 py-2 text-center">
-                      #
-                    </th>
-                    <th
-                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
-                      onClick={() => handleSort("name")}
-                    >
-                      <span className="flex justify-center gap-2 items-center">
-                        <span>Name</span>
-                        <span>
-                          {sortConfig.key === "name" &&
-                          sortConfig.direction === "asc" ? (
-                            <FaSortUp />
-                          ) : sortConfig.key === "name" &&
-                            sortConfig.direction === "desc" ? (
-                            <FaSortDown />
-                          ) : (
-                            <FaSort />
-                          )}
-                        </span>
-                      </span>
-                    </th>
-                    <th
-                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
-                      onClick={() => handleSort("email")}
-                    >
-                      <span className="flex justify-center gap-2 items-center">
-                        <span>Email</span>
-                        <span>
-                          {sortConfig.key === "email" &&
-                          sortConfig.direction === "asc" ? (
-                            <FaSortUp />
-                          ) : sortConfig.key === "email" &&
-                            sortConfig.direction === "desc" ? (
-                            <FaSortDown />
-                          ) : (
-                            <FaSort />
-                          )}
-                        </span>
-                      </span>
-                    </th>
-                    <th
-                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
-                      onClick={() => handleSort("amount")}
-                    >
-                      <span className="flex justify-center gap-2 items-center">
-                        <span>Amount</span>
-                        <span>
-                          {sortConfig.key === "amount" &&
-                          sortConfig.direction === "asc" ? (
-                            <FaSortUp />
-                          ) : sortConfig.key === "amount" &&
-                            sortConfig.direction === "desc" ? (
-                            <FaSortDown />
-                          ) : (
-                            <FaSort />
-                          )}
-                        </span>
-                      </span>
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2 text-center">
-                      Message
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2 text-center">
-                      Admin Remarks
-                    </th>
-                    <th
-                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
-                      onClick={() => handleSort("createdAt")}
-                    >
-                      <span className="flex justify-center gap-2 items-center">
-                        <span> Paid On</span>
-                        <span>
-                          {sortConfig.key === "createdAt" &&
-                          sortConfig.direction === "asc" ? (
-                            <FaSortUp />
-                          ) : sortConfig.key === "createdAt" &&
-                            sortConfig.direction === "desc" ? (
-                            <FaSortDown />
-                          ) : (
-                            <FaSort />
-                          )}
-                        </span>
-                      </span>
-                    </th>
-                    <th
-                      className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
-                      onClick={() => handleSort("updatedAt")}
-                    >
-                      <span className="flex justify-center gap-2 items-center">
-                        <span> Updated On</span>
-                        <span>
-                          {sortConfig.key === "updatedAt" &&
-                          sortConfig.direction === "asc" ? (
-                            <FaSortUp />
-                          ) : sortConfig.key === "updatedAt" &&
-                            sortConfig.direction === "desc" ? (
-                            <FaSortDown />
-                          ) : (
-                            <FaSort />
-                          )}
-                        </span>
-                      </span>
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2 text-center">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {donations.map((donation, index) => (
-                    <tr key={donation.id}>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {index + 1}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {donation.name}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {donation.email}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2 text-right">
-                        {donation.amount}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {donation.message}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {donation.adminRemarks}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {new Date(donation.createdAt).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {new Date(donation.updatedAt).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2 flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => handleEdit(donation)}
-                          className="bg-green-500 text-white p-1 rounded hover:bg-green-600"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleView(donation)}
-                          className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600"
-                        >
-                          <FaEye />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(donation.id)}
-                          className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
-                        >
-                          <FaTrash />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              {/* Pagination */}
-              <div className="flex justify-center items-center gap-3 mt-4">
-                <div>
-                  <select
-                    value={pageSize}
-                    onChange={(e) => {
-                      setPageSize(Number(e.target.value));
-                    }}
-                    className="border rounded px-2 py-1"
-                  >
-                    {[10, 20, 50, 100].map((size) => (
-                      <option key={size} value={size}>
-                        {size}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
-                >
-                  <FaArrowLeft />
-                </button>
-                <span className="text-gray-700">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
-                >
-                  <FaArrowRight />
-                </button>
-              </div>
+            <div>
+              <DatePicker
+                selected={fromDate}
+                onChange={handleFromDateChange}
+                placeholderText="From"
+                className="w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                dateFormat="dd/MM/yyyy"
+              />
             </div>
-          )}
+            <div>
+              <DatePicker
+                selected={toDate}
+                onChange={handleToDateChange}
+                placeholderText="To"
+                className="w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                dateFormat="dd/MM/yyyy"
+              />
+            </div>
+          </div>
+          <div className="mb-4 text-right font-semibold">
+            <span>Total Donation Amount: BDT {totalDonation}</span>
+          </div>
         </div>
 
-        {/* Edit Dialog */}
-        <dialog
-          ref={editDialogRef}
-          className="p-6 bg-white rounded-md shadow-md w-[500px] mx-auto realtive"
-        >
-          <button
-            onClick={() => editDialogRef.current.close()}
-            className="absolute top-2 right-2 text-gray-500 text-xl"
-          >
-            <FaTimes />
-          </button>
-          <h2 className="text-xl font-semibold mb-4">Edit Donation</h2>
-          <form onSubmit={handleSave}>
-            <p className="mb-3">
-              <strong>Name:</strong> {selectedDonation?.name}
-            </p>
-            <p className="mb-3">
-              <strong>Email:</strong> {selectedDonation?.email}
-            </p>
-            <p className="mb-3">
-              <strong>Amount:</strong> BDT {selectedDonation?.amount}
-            </p>
-            <p className="mb-3">
-              <strong>Message:</strong> {selectedDonation?.message}
-            </p>
-            <div className="mb-4">
-              <label htmlFor="adminRemarks" className="block">
-                <strong>Admin Remarks:</strong>
-              </label>
-              <textarea
-                id="adminRemarks"
-                name="adminRemarks"
-                value={formData.adminRemarks}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              ></textarea>
-            </div>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-            >
-              Save Changes
-            </button>
-          </form>
-        </dialog>
+        {loading && <p className="text-center text-gray-500">Loading...</p>}
+        {error && <p className="text-center text-red-500">{error}</p>}
 
-        {/* View Dialog */}
-        <dialog
-          ref={viewDialogRef}
-          className="p-6 bg-white rounded-md shadow-md w-[500px] mx-auto realtive"
+        {!loading && donations && donations.length === 0 && (
+          <p className="text-center text-gray-500">No donations found.</p>
+        )}
+
+        {!loading && donations && donations.length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto border-collapse border border-gray-300">
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="border border-gray-300 px-4 py-2 text-center">
+                    #
+                  </th>
+                  <th
+                    className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
+                    onClick={() => handleSort("name")}
+                  >
+                    <span className="flex justify-center gap-2 items-center">
+                      <span>Name</span>
+                      <span>
+                        {sortConfig.key === "name" &&
+                        sortConfig.direction === "asc" ? (
+                          <FaSortUp />
+                        ) : sortConfig.key === "name" &&
+                          sortConfig.direction === "desc" ? (
+                          <FaSortDown />
+                        ) : (
+                          <FaSort />
+                        )}
+                      </span>
+                    </span>
+                  </th>
+                  <th
+                    className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
+                    onClick={() => handleSort("email")}
+                  >
+                    <span className="flex justify-center gap-2 items-center">
+                      <span>Email</span>
+                      <span>
+                        {sortConfig.key === "email" &&
+                        sortConfig.direction === "asc" ? (
+                          <FaSortUp />
+                        ) : sortConfig.key === "email" &&
+                          sortConfig.direction === "desc" ? (
+                          <FaSortDown />
+                        ) : (
+                          <FaSort />
+                        )}
+                      </span>
+                    </span>
+                  </th>
+                  <th
+                    className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
+                    onClick={() => handleSort("amount")}
+                  >
+                    <span className="flex justify-center gap-2 items-center">
+                      <span>Amount</span>
+                      <span>
+                        {sortConfig.key === "amount" &&
+                        sortConfig.direction === "asc" ? (
+                          <FaSortUp />
+                        ) : sortConfig.key === "amount" &&
+                          sortConfig.direction === "desc" ? (
+                          <FaSortDown />
+                        ) : (
+                          <FaSort />
+                        )}
+                      </span>
+                    </span>
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 text-center">
+                    Message
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 text-center">
+                    Admin Remarks
+                  </th>
+                  <th
+                    className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
+                    onClick={() => handleSort("createdAt")}
+                  >
+                    <span className="flex justify-center gap-2 items-center">
+                      <span> Paid On</span>
+                      <span>
+                        {sortConfig.key === "createdAt" &&
+                        sortConfig.direction === "asc" ? (
+                          <FaSortUp />
+                        ) : sortConfig.key === "createdAt" &&
+                          sortConfig.direction === "desc" ? (
+                          <FaSortDown />
+                        ) : (
+                          <FaSort />
+                        )}
+                      </span>
+                    </span>
+                  </th>
+                  <th
+                    className="border border-gray-300 px-4 py-2 text-center cursor-pointer"
+                    onClick={() => handleSort("updatedAt")}
+                  >
+                    <span className="flex justify-center gap-2 items-center">
+                      <span> Updated On</span>
+                      <span>
+                        {sortConfig.key === "updatedAt" &&
+                        sortConfig.direction === "asc" ? (
+                          <FaSortUp />
+                        ) : sortConfig.key === "updatedAt" &&
+                          sortConfig.direction === "desc" ? (
+                          <FaSortDown />
+                        ) : (
+                          <FaSort />
+                        )}
+                      </span>
+                    </span>
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 text-center">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {donations.map((donation, index) => (
+                  <tr key={donation.id}>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {index + 1}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {donation.name}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {donation.email}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 text-right">
+                      {donation.amount}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {donation.message}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {donation.adminRemarks}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {new Date(donation.createdAt).toLocaleString()}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {new Date(donation.updatedAt).toLocaleString()}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => handleEdit(donation)}
+                        className="bg-green-500 text-white p-1 rounded hover:bg-green-600"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => handleView(donation)}
+                        className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600"
+                      >
+                        <FaEye />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(donation.id)}
+                        className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Pagination */}
+            <div className="flex justify-center items-center gap-3 mt-4">
+              <div>
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                  }}
+                  className="border rounded px-2 py-1"
+                >
+                  {[10, 20, 50, 100].map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
+              >
+                <FaArrowLeft />
+              </button>
+              <span className="text-gray-700">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
+              >
+                <FaArrowRight />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Edit Dialog */}
+      <dialog
+        ref={editDialogRef}
+        className="p-6 bg-white rounded-md shadow-md w-[500px] mx-auto realtive"
+      >
+        <button
+          onClick={() => editDialogRef.current.close()}
+          className="absolute top-2 right-2 text-gray-500 text-xl"
         >
-          <button
-            onClick={() => viewDialogRef.current.close()}
-            className="absolute top-2 right-2 text-gray-500 text-xl"
-          >
-            <FaTimes />
-          </button>
-          <h2 className="text-xl font-semibold mb-4">View Donation</h2>
+          <FaTimes />
+        </button>
+        <h2 className="text-xl font-semibold mb-4">Edit Donation</h2>
+        <form onSubmit={handleSave}>
           <p className="mb-3">
             <strong>Name:</strong> {selectedDonation?.name}
           </p>
@@ -546,19 +559,66 @@ export default function ReportPage() {
           <p className="mb-3">
             <strong>Message:</strong> {selectedDonation?.message}
           </p>
-          <p className="mb-3">
-            <strong>Admin Remarks:</strong> {selectedDonation?.adminRemarks}
-          </p>
-          <p className="mb-3">
-            <strong>Paid On:</strong>{" "}
-            {new Date(selectedDonation?.createdAt).toLocaleString()}
-          </p>
-          <p className="mb-3">
-            <strong>Updated On:</strong>{" "}
-            {new Date(selectedDonation?.updatedAt).toLocaleString()}
-          </p>
-        </dialog>
-      </div>
-    )
+          <div className="mb-4">
+            <label htmlFor="adminRemarks" className="block">
+              <strong>Admin Remarks:</strong>
+            </label>
+            <textarea
+              id="adminRemarks"
+              name="adminRemarks"
+              value={formData.adminRemarks}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            className="flex items-center justify-center px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 gap-2"
+          >
+            <FaSave className="text-white text-lg" />
+            <span>Save Changes</span>
+          </button>
+        </form>
+      </dialog>
+
+      {/* View Dialog */}
+      <dialog
+        ref={viewDialogRef}
+        className="p-6 bg-white rounded-md shadow-md w-[500px] mx-auto realtive"
+      >
+        <button
+          onClick={() => viewDialogRef.current.close()}
+          className="absolute top-2 right-2 text-gray-500 text-xl"
+        >
+          <FaTimes />
+        </button>
+        <h2 className="text-xl font-semibold mb-4">View Donation</h2>
+        <p className="mb-3">
+          <strong>Name:</strong> {selectedDonation?.name}
+        </p>
+        <p className="mb-3">
+          <strong>Email:</strong> {selectedDonation?.email}
+        </p>
+        <p className="mb-3">
+          <strong>Amount:</strong> BDT {selectedDonation?.amount}
+        </p>
+        <p className="mb-3">
+          <strong>Message:</strong> {selectedDonation?.message}
+        </p>
+        <p className="mb-3">
+          <strong>Admin Remarks:</strong> {selectedDonation?.adminRemarks}
+        </p>
+        <p className="mb-3">
+          <strong>Paid On:</strong>{" "}
+          {new Date(selectedDonation?.createdAt).toLocaleString()}
+        </p>
+        <p className="mb-3">
+          <strong>Updated On:</strong>{" "}
+          {new Date(selectedDonation?.updatedAt).toLocaleString()}
+        </p>
+      </dialog>
+    </div>
   );
 }
+
+export default AuthGuard(AdminReportPage, ["admin"]);

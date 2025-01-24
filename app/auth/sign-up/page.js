@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 import { jwtDecode } from "jwt-decode";
+import { FaSpinner, FaUserPlus } from "react-icons/fa";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -18,16 +19,7 @@ export default function SignUp() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        if (decodedToken?.role === "admin") {
-          router.push("/admin/report");
-        } else {
-          router.push("/donate");
-        }
-      } catch (error) {
-        console.error("Failed to decode token:", error);
-      }
+      router.push("/");
     }
   }, []);
 
@@ -39,7 +31,7 @@ export default function SignUp() {
     if (!name) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        name: "Please provide a your full name.",
+        name: "Please provide your full name.",
       }));
       return;
     }
@@ -140,7 +132,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-3">
       <div className="bg-white p-6 rounded-md shadow-md w-full max-w-md">
         <h2 className="text-2xl font-semibold text-gray-700 text-center">
           Sign Up
@@ -212,10 +204,22 @@ export default function SignUp() {
           </div>
           <button
             type="submit"
-            className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600"
+            className={`w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 flex items-center justify-center gap-2 ${
+              loading ? "cursor-not-allowed opacity-75" : ""
+            }`}
             disabled={loading}
           >
-            {loading ? "Signing Up..." : "Sign Up"}
+            {loading ? (
+              <>
+                <FaSpinner className="animate-spin text-white text-lg" />
+                <span>Signing Up...</span>
+              </>
+            ) : (
+              <>
+                <FaUserPlus className="text-white text-lg" />
+                <span>Sign Up</span>
+              </>
+            )}
           </button>
         </form>
         <p className="mt-4 text-sm text-gray-600 text-center">
