@@ -19,7 +19,7 @@ export default function Navbar() {
         setIsLoggedIn(true);
         setIsAdmin(decodedToken?.role === "admin");
       } catch (error) {
-        console.error("Failed to decode token:", error);
+        toast.error("Failed to decode token:", error);
         setIsLoggedIn(false);
       }
     } else {

@@ -1,16 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  FaArrowLeft,
-  FaArrowRight,
-  FaSort,
-  FaSortUp,
-  FaSortDown,
-} from "react-icons/fa";
+import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { AuthGuard } from "@/app/utils/AuthGuard";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Pagination from "@/app/components/pagination";
 
 function UserDonationPage() {
   const [donations, setDonations] = useState([]);
@@ -23,6 +18,7 @@ function UserDonationPage() {
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [totalDonation, setTotalDonation] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
 
   useEffect(() => {
     fetchDonations(currentPage, pageSize, sortConfig, fromDate, toDate);
@@ -60,6 +56,7 @@ function UserDonationPage() {
       setDonations(data.data);
       setTotalDonation(data.totalDonation);
       setTotalPages(data.totalPages);
+      setTotalRecords(data.totalRecords);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -93,7 +90,7 @@ function UserDonationPage() {
         <div className="flex justify-center items-center mb-4">
           <h2 className="text-2xl font-semibold text-gray-700">My Donations</h2>
         </div>
-        <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <div className="flex flex-wrap justify-between items-center gap-3">
           <div className="flex flex-wrap gap-3">
             <div>
               <DatePicker
@@ -114,10 +111,11 @@ function UserDonationPage() {
               />
             </div>
           </div>
-          <div className="mb-4 text-right font-semibold">
+          <div className="text-right font-semibold">
             <span>Total Donation Amount: BDT {totalDonation}</span>
           </div>
         </div>
+        <div className="my-2 font-semibold">Total Records: {totalRecords}</div>
 
         {loading && <p className="text-center text-gray-500">Loading...</p>}
         {error && <p className="text-center text-red-500">{error}</p>}
@@ -241,41 +239,13 @@ function UserDonationPage() {
               </tbody>
             </table>
 
-            {/* Pagination */}
-            <div className="flex justify-center items-center gap-3 mt-4">
-              <div>
-                <select
-                  value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(Number(e.target.value));
-                  }}
-                  className="border rounded px-2 py-1"
-                >
-                  {[10, 20, 50, 100].map((size) => (
-                    <option key={size} value={size}>
-                      {size}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
-              >
-                <FaArrowLeft />
-              </button>
-              <span className="text-gray-700">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
-              >
-                <FaArrowRight />
-              </button>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              onPageChange={handlePageChange}
+              onPageSizeChange={setPageSize}
+            />
           </div>
         )}
       </div>

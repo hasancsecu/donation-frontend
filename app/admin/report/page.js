@@ -3,8 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
-  FaArrowLeft,
-  FaArrowRight,
   FaEdit,
   FaEye,
   FaTrash,
@@ -19,10 +17,12 @@ import toast from "react-hot-toast";
 import { AuthGuard } from "@/app/utils/AuthGuard";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Pagination from "@/app/components/pagination";
 
 function AdminReportPage() {
   const [donations, setDonations] = useState([]);
   const [totalDonation, setTotalDonation] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -107,6 +107,7 @@ function AdminReportPage() {
       setDonations(data.data);
       setTotalDonation(data.totalDonation);
       setTotalPages(data.totalPages);
+      setTotalRecords(data.totalRecords);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -289,7 +290,7 @@ function AdminReportPage() {
           )}
         </div>
 
-        <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <div className="flex flex-wrap justify-between items-center gap-3">
           <div className="flex flex-wrap gap-3">
             <input
               type="text"
@@ -317,10 +318,11 @@ function AdminReportPage() {
               />
             </div>
           </div>
-          <div className="mb-4 text-right font-semibold">
+          <div className="text-right font-semibold">
             <span>Total Donation Amount: BDT {totalDonation}</span>
           </div>
         </div>
+        <div className="my-2 font-semibold">Total Records: {totalRecords}</div>
 
         {loading && <p className="text-center text-gray-500">Loading...</p>}
         {error && <p className="text-center text-red-500">{error}</p>}
@@ -495,41 +497,13 @@ function AdminReportPage() {
               </tbody>
             </table>
 
-            {/* Pagination */}
-            <div className="flex justify-center items-center gap-3 mt-4">
-              <div>
-                <select
-                  value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(Number(e.target.value));
-                  }}
-                  className="border rounded px-2 py-1"
-                >
-                  {[10, 20, 50, 100].map((size) => (
-                    <option key={size} value={size}>
-                      {size}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
-              >
-                <FaArrowLeft />
-              </button>
-              <span className="text-gray-700">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
-              >
-                <FaArrowRight />
-              </button>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              onPageChange={handlePageChange}
+              onPageSizeChange={setPageSize}
+            />
           </div>
         )}
       </div>

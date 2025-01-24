@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { FaDollarSign, FaUsers, FaChartBar } from "react-icons/fa";
 
 export default function AdminDashboard() {
@@ -34,7 +35,7 @@ export default function AdminDashboard() {
           todayUsers: data.todayUsers,
         });
       } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
+        toast.error("Error fetching dashboard stats:", error);
       }
     };
 

@@ -3,6 +3,8 @@ import "./globals.css";
 import Navbar from "./components/navbar";
 import { Toaster } from "react-hot-toast";
 import Footer from "./components/footer";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,7 +31,9 @@ export default function RootLayout({ children }) {
         <main className="min-h-screen bg-gray-100">
           <Toaster position="top-center" reverseOrder={false} />
           <Navbar />
-          <div className="min-h-screen bg-gray-100">{children}</div>
+          <Suspense fallback={<Loading />}>
+            <div className="min-h-screen bg-gray-100">{children}</div>
+          </Suspense>
           <Footer />
         </main>
       </body>
