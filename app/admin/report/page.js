@@ -18,6 +18,7 @@ import { AuthGuard } from "@/app/utils/AuthGuard";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Pagination from "@/app/components/pagination";
+import ConfirmationDialog from "@/app/components/confirm-dialog";
 
 function AdminReportPage() {
   const [donations, setDonations] = useState([]);
@@ -40,6 +41,8 @@ function AdminReportPage() {
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
   const router = useRouter();
 
   const editDialogRef = useRef(null);
@@ -193,14 +196,23 @@ function AdminReportPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this?");
-    if (confirmed) {
+  const openConfirmDialog = (id) => {
+    setDeleteTargetId(id);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const closeConfirmDialog = () => {
+    setIsConfirmDialogOpen(false);
+    setDeleteTargetId(null);
+  };
+
+  const handleDelete = async () => {
+    if (deleteTargetId) {
       try {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Authentication token not found");
 
-        await fetch(`http://localhost:5000/donations/${id}`, {
+        await fetch(`http://localhost:5000/donations/${deleteTargetId}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -215,8 +227,11 @@ function AdminReportPage() {
           fromDate,
           toDate
         );
+        toast.success("Donation deleted successfully!");
       } catch (err) {
-        setError("Failed to delete donation");
+        toast.error("Failed to delete donation");
+      } finally {
+        closeConfirmDialog();
       }
     }
   };
@@ -486,7 +501,7 @@ function AdminReportPage() {
                         <FaEye />
                       </button>
                       <button
-                        onClick={() => handleDelete(donation.id)}
+                        onClick={() => openConfirmDialog(donation.id)}
                         className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
                       >
                         <FaTrash />
@@ -515,7 +530,7 @@ function AdminReportPage() {
       >
         <button
           onClick={() => editDialogRef.current.close()}
-          className="absolute top-2 right-2 text-gray-500 text-xl"
+          className="absolute top-2 right-2 text-red-500 text-xl"
         >
           <FaTimes />
         </button>
@@ -545,13 +560,15 @@ function AdminReportPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             ></textarea>
           </div>
-          <button
-            type="submit"
-            className="flex items-center justify-center px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 gap-2"
-          >
-            <FaSave className="text-white text-lg" />
-            <span>Save Changes</span>
-          </button>
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="flex items-center justify-center px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 gap-2"
+            >
+              <FaSave className="text-white text-lg" />
+              <span>Save Changes</span>
+            </button>
+          </div>
         </form>
       </dialog>
 
@@ -562,7 +579,7 @@ function AdminReportPage() {
       >
         <button
           onClick={() => viewDialogRef.current.close()}
-          className="absolute top-2 right-2 text-gray-500 text-xl"
+          className="absolute top-2 right-2 text-red-500 text-xl"
         >
           <FaTimes />
         </button>
@@ -591,6 +608,14 @@ function AdminReportPage() {
           {new Date(selectedDonation?.updatedAt).toLocaleString()}
         </p>
       </dialog>
+
+      {/* Delete Dialog */}
+      <ConfirmationDialog
+        isOpen={isConfirmDialogOpen}
+        onClose={closeConfirmDialog}
+        onConfirm={handleDelete}
+        message="Are you sure you want to delete this donation?"
+      />
     </div>
   );
 }
