@@ -270,18 +270,22 @@ function AdminReportPage() {
           }),
         }
       );
-      if (!response.ok) throw new Error("Failed to update donation");
-
-      toast.success("Donation updated successfully!");
-      fetchDonations(
-        currentPage,
-        pageSize,
-        searchQuery,
-        sortConfig,
-        fromDate,
-        toDate
-      );
-      editDialogRef.current.close();
+      if (response.ok) {
+        toast.success("Donation updated successfully!");
+        fetchDonations(
+          currentPage,
+          pageSize,
+          searchQuery,
+          sortConfig,
+          fromDate,
+          toDate
+        );
+        editDialogRef.current.close();
+      } else {
+        const error = await response.json();
+        toast.error(error.message || "Failed to update donation");
+        throw new Error("Failed to update donation");
+      }
     } catch (err) {
       setError(err.message);
     }

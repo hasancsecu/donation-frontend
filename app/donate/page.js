@@ -108,7 +108,11 @@ export default function DonatePage() {
           }
         }, 1000);
       } else {
-        toast.error("Failed to process the donation. Please try again later.");
+        const error = await response.json();
+        toast.error(
+          error.message ||
+            "Failed to process the donation. Please try again later."
+        );
       }
     } catch (err) {
       toast.error("Failed to process the donation. Please try again later.");
