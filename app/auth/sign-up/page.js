@@ -21,7 +21,7 @@ export default function SignUp() {
     if (token) {
       router.push("/");
     }
-  }, []);
+  }, [router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

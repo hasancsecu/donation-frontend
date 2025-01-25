@@ -9,7 +9,7 @@ export default function ForbiddenPage() {
         403 | Forbidden
       </h1>
       <p className="text-lg text-gray-700 mt-4">
-        You don't have access to view this page
+        You don&apos;t have access to view this page
       </p>
       <Link href="/">
         <button className="mt-6 bg-green-500 text-white py-3 px-6 rounded-lg hover:bg-green-600 transition duration-200 flex items-center gap-2">

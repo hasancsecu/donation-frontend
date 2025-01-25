@@ -77,7 +77,7 @@ export default function AdminDashboard() {
               <FaDollarSign className="text-3xl text-green-500 mr-4" />
               <div>
                 <h3 className="text-lg font-semibold text-gray-700">
-                  Today's Donations
+                  Today&apos;s Donations
                 </h3>
                 <p className="text-3xl font-bold text-green-500">
                   BDT {stats.todayDonation}
@@ -103,7 +103,7 @@ export default function AdminDashboard() {
               <FaUsers className="text-3xl text-blue-500 mr-4" />
               <div>
                 <h3 className="text-lg font-semibold text-gray-700">
-                  Today's New Users
+                  Today&apos;s New Users
                 </h3>
                 <p className="text-3xl font-bold text-blue-500">
                   {stats.todayUsers}

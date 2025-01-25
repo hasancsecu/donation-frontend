@@ -18,7 +18,7 @@ export default function SignIn() {
     if (token) {
       router.push("/");
     }
-  }, []);
+  }, [router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -152,7 +152,7 @@ export default function SignIn() {
           </button>
         </form>
         <p className="mt-4 text-sm text-gray-600 text-center">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/auth/sign-up" className="text-green-500 hover:underline">
             Sign Up
           </Link>
