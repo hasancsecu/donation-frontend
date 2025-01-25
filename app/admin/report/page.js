@@ -94,7 +94,7 @@ function AdminReportPage() {
       if (!token) throw new Error("Authentication token not found");
 
       const response = await fetch(
-        `http://localhost:5000/donations?${queryParams}`,
+        `${process.env.API_URL}donations?${queryParams}`,
         {
           method: "GET",
           headers: {
@@ -212,7 +212,7 @@ function AdminReportPage() {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Authentication token not found");
 
-        await fetch(`http://localhost:5000/donations/${deleteTargetId}`, {
+        await fetch(`${process.env.API_URL}donations/${deleteTargetId}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -248,17 +248,12 @@ function AdminReportPage() {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.amount) {
-      alert("Please fill in all the required fields.");
-      return;
-    }
-
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Authentication token not found");
 
       const response = await fetch(
-        `http://localhost:5000/donations/${selectedDonation.id}`,
+        `${process.env.API_URL}donations/${selectedDonation.id}`,
         {
           method: "PUT",
           headers: {

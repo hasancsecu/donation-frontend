@@ -88,7 +88,7 @@ export default function DonatePage() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/donations", {
+      const response = await fetch(`${process.env.API_URL}donations`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

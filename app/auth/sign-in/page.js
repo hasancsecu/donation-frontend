@@ -41,7 +41,7 @@ export default function SignIn() {
     const loadingToastId = toast.loading("Signing in...");
 
     try {
-      const response = await fetch("http://localhost:5000/auth/signin", {
+      const response = await fetch(`${process.env.API_URL}auth/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

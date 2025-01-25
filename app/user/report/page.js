@@ -40,7 +40,7 @@ function UserDonationPage() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Authentication token not found");
       const response = await fetch(
-        `http://localhost:5000/donations/user?${queryParams}`,
+        `${process.env.API_URL}donations/user?${queryParams}`,
         {
           method: "GET",
           headers: {

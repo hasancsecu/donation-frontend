@@ -20,7 +20,7 @@ export default function AdminDashboard() {
       try {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Authentication token not found");
-        const response = await fetch(`http://localhost:5000/donations/stats`, {
+        const response = await fetch(`${process.env.API_URL}donations/stats`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -54,7 +54,8 @@ export default function AdminDashboard() {
             Welcome, Admin
           </h1>
           <p className="text-lg text-gray-600 mt-2">
-            Here’s a quick overview of today’s activity and total stats.
+            Here&lsquo;s a quick overview of today&lsquo;s activity and total
+            stats.
           </p>
         </div>
 
